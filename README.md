@@ -11,7 +11,7 @@ raw_logs/
 ├── qualty_test.ipynb      # Veri kalitesi testleri
 ├── oop_result.ipynb       # Pipeline kullanım örnekleri
 └── README.md              # Bu dosya
-```
+``` 
 
 ## 🚀 Özellikler
 
