@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Optional, Generator, List, Dict
 import pandas as pd
 from pydantic import BaseModel, field_validator
-from sqlalchemy import create_engine, text
+from sqlalchemy import  text
 
 # ...existing code...
 # Sabitler / yardımcı setler
@@ -154,7 +154,6 @@ class ParquetReader:
         self.path = path
 
     def read_all(self) -> pd.DataFrame:
-        # Not: pandas read_parquet için chunk desteği yok; büyük veriler için pyarrow stream veya partition önerilir.
         return pd.read_parquet(self.path)
 
     def read_in_batches(self, batch_size: int) -> Generator[pd.DataFrame, None, None]:
