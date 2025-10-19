@@ -1,4 +1,3 @@
-import json
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Generator, List, Dict
@@ -6,7 +5,7 @@ import pandas as pd
 from pydantic import BaseModel, field_validator
 from sqlalchemy import  text
 
-# ...existing code...
+now = datetime.now()
 # Sabitler / yardımcı setler
 true_set = {"yes", "true", "1", "y", "evet"}
 false_set = {"no", "false", "0", "n", "hayir", "hayır"}
@@ -36,7 +35,7 @@ TABLE_PK_MAP = {
     "payments": ["request_id"],
 }
 
-# Pydantic modelleri (orijinal davranış korunuyor)
+# Pydantic modelleri
 class UserModel(BaseModel):
     user_id: Optional[float]
     subscriber_id: Optional[float]
@@ -148,7 +147,7 @@ class SessionModel(BaseModel):
             return v
         return str(v)
 
-# Sorumluluklar: okuma, doğrulama, yazma
+# Okuma, doğrulama, yazma
 class ParquetReader:
     def __init__(self, path: str):
         self.path = path
@@ -175,15 +174,23 @@ class ValidatorProcessor:
                 hotels.append(HotelModel(**row).model_dump(exclude_none=True))
                 payments.append(PaymentModel(**row).model_dump(exclude_none=True))
             except Exception as e:
-                # konsola yazdır; istenirse logging ile değiştirilebilir
+                # konsola yazdır; yada logging yapılabilir
                 print(f"Validation error: {e}")
-        return (
-            pd.DataFrame(users).drop_duplicates(subset=["user_id"]) if users else pd.DataFrame(),
-            pd.DataFrame(sessions).drop_duplicates(subset=["session_id"]) if sessions else pd.DataFrame(),
-            pd.DataFrame(events) if events else pd.DataFrame(),
-            pd.DataFrame(hotels).drop_duplicates(subset=["hotel_id"]) if hotels else pd.DataFrame(),
-            pd.DataFrame(payments) if payments else pd.DataFrame(),
-        )
+        
+        # DataFrame oluşturulmasi
+        users = pd.DataFrame(users).drop_duplicates(subset=["user_id"]) if users else pd.DataFrame()
+        sessions = pd.DataFrame(sessions).drop_duplicates(subset=["session_id"]) if sessions else pd.DataFrame()
+        events = pd.DataFrame(events) if events else pd.DataFrame()
+        hotels = pd.DataFrame(hotels).drop_duplicates(subset=["hotel_id"]) if hotels else pd.DataFrame()
+        payments = pd.DataFrame(payments) if payments else pd.DataFrame()
+
+        # updated_Date eklenmesi
+        now = datetime.now()
+        for df_item in [users, sessions, events, hotels, payments]:
+            if not df_item.empty:
+                df_item["updated_Date"] = now
+
+        return users, sessions, events, hotels, payments
 
 class UpsertWriter:
     def __init__(self, engine):
