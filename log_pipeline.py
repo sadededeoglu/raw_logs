@@ -16,24 +16,21 @@ formats = [
     "%Y-%m-%dT%H:%M:%S.%fZ",
     "%Y-%m-%dT%H:%M:%S",
     "%d/%m/%Y %H:%M:%S",
-    "%d-%m-%Y %H:%M:%S",
-]
+    "%d-%m-%Y %H:%M:%S"]
 
 status = {
     "done": "success",
     "ok": "success",
     "paid": "success",
     "fail": "failed",
-    "error": "failed",
-}
+    "error": "failed"}
 
 TABLE_PK_MAP = {
     "users": ["user_id"],
     "sessions": ["user_id", "session_id"],
     "events": ["request_id", "session_id", "hotel_id", "funnel_id"],
     "hotels": ["hotel_id"],
-    "payments": ["request_id"],
-}
+    "payments": ["request_id"]}
 
 # Pydantic modelleri
 class UserModel(BaseModel):
